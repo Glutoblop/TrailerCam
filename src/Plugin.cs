@@ -10,7 +10,7 @@ namespace TrailerCam
     public sealed class Plugin : BaseUnityPlugin
     {
         public const string Guid = "jordan.valheim.trailercam";
-        public const string Version = "0.1.1";
+        public const string Version = "0.1.2";
 
         private static Plugin _activeFlight;
         private ConfigEntry<KeyboardShortcut> _toggleKey;

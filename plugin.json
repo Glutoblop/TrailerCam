@@ -3,7 +3,7 @@
   "id": "TrailerCam",
   "name": "Trailer Cam",
   "guid": "jordan.valheim.trailercam",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Glutoblop",
   "description": "Detach a smooth camera for filming Valheim flybys. Fly with WASD, adjust speed with the scroll wheel, and hide the HUD while filming.",
   "repo": "Glutoblop/TrailerCam",
@@ -15,6 +15,7 @@
     "BepInExPack_Valheim": "5.4.2360"
   },
   "changelog": {
+    "0.1.2": "Prevent accidental target lock during Trailer Cam flights and add a separate Movement Smoothing slider.",
     "0.1.1": "Set the camera toggle in Mod Settings with support for Alt, Ctrl, and Shift combinations.",
     "0.1.0": "Initial release with an F8 toggle, smooth free flight, mouse-wheel speed control, and automatic HUD hiding."
   }
