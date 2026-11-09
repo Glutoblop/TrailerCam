@@ -17,7 +17,9 @@ Your character stays in the world and can still take damage. Terrain and objects
 
 Select **Trailer Cam** in the [Valheim Mod Installer](https://github.com/Glutoblop/ValheimPlugins), or download `TrailerCam.zip` from the [latest release](https://github.com/Glutoblop/TrailerCam/releases/latest) and extract it into your Valheim folder with BepInEx installed.
 
-Change the toggle key, starting speed, smoothing, or HUD behaviour in `BepInEx/config/jordan.valheim.trailercam.cfg` after the first launch.
+To change the hotkey, open **Esc → Mod Settings → Trailer Cam → Camera → Toggle Key**. Click the current binding, hold any modifiers you want, and press the main key. For example, hold **Alt + Ctrl + Shift** and press **F8**. **Reset** restores **F8**.
+
+The Trailer Cam tab also has settings for starting speed, smoothing, and HUD hiding. Settings are saved in `BepInEx/config/jordan.valheim.trailercam.cfg`.
 
 ## Build
 

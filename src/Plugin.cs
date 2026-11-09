@@ -1,19 +1,22 @@
 using BepInEx;
 using BepInEx.Configuration;
+using HarmonyLib;
 using UnityEngine;
 
 namespace TrailerCam
 {
-    [BepInPlugin("jordan.valheim.trailercam", "Trailer Cam", Plugin.Version)]
+    [BepInPlugin(Plugin.Guid, "Trailer Cam", Plugin.Version)]
     [BepInProcess("valheim.exe")]
     public sealed class Plugin : BaseUnityPlugin
     {
+        public const string Guid = "jordan.valheim.trailercam";
         public const string Version = "0.1.0";
 
-        private ConfigEntry<KeyCode> _toggleKey;
+        private ConfigEntry<KeyboardShortcut> _toggleKey;
         private ConfigEntry<float> _startSpeed;
         private ConfigEntry<float> _smoothness;
         private ConfigEntry<bool> _hideHud;
+        private Harmony _harmony;
 
         private Player _flightPlayer;
         private GameCamera _flightCamera;
@@ -24,7 +27,8 @@ namespace TrailerCam
 
         private void Awake()
         {
-            _toggleKey = Config.Bind("Camera", "ToggleKey", KeyCode.F8, "Detach the camera or return to your character.");
+            _toggleKey = Config.Bind("Camera", "ToggleKey", new KeyboardShortcut(KeyCode.F8),
+                "Detach the camera or return to your character. Hold any Ctrl, Alt, or Shift modifiers before pressing the main key.");
             _startSpeed = Config.Bind("Camera", "StartSpeed", 8f,
                 new ConfigDescription("Starting speed in metres per second. Scroll to change it in flight.",
                     new AcceptableValueRange<float>(1f, 1000f)));
@@ -32,13 +36,16 @@ namespace TrailerCam
                 new ConfigDescription("Smooth the camera's movement and turns. Zero gives an immediate response.",
                     new AcceptableValueRange<float>(0f, 1f)));
             _hideHud = Config.Bind("Camera", "HideHud", true, "Hide the HUD during flight and restore it on exit.");
+
+            _harmony = new Harmony(Guid);
+            _harmony.PatchAll(typeof(Plugin).Assembly);
         }
 
         private void Update()
         {
             Player player = Player.m_localPlayer;
             GameCamera camera = GameCamera.instance;
-            bool toggle = ZInput.GetKeyDown(_toggleKey.Value, logWarning: false);
+            bool toggle = TogglePressed();
             if (_flightCamera is not null)
             {
                 if (!camera || camera != _flightCamera || !player || player != _flightPlayer
@@ -52,8 +59,20 @@ namespace TrailerCam
                 return;
             }
 
-            if (toggle && camera && player && Hud.instance && !GameCamera.InFreeFly() && player.TakeInput())
+            if (toggle && camera && player && Hud.instance && !GameCamera.InFreeFly() && !Menu.IsActive() && player.TakeInput())
                 StartFlight(player, camera);
+        }
+
+        private bool TogglePressed()
+        {
+            KeyboardShortcut shortcut = _toggleKey.Value;
+            if (shortcut.MainKey == KeyCode.None || !ZInput.GetKeyDown(shortcut.MainKey, logWarning: false)) return false;
+
+            // Check the required modifiers without blocking the shortcut when movement keys are held.
+            foreach (KeyCode modifier in shortcut.Modifiers)
+                if (!ZInput.GetKey(modifier, logWarning: false)) return false;
+
+            return true;
         }
 
         private void StartFlight(Player player, GameCamera camera)
@@ -104,5 +123,7 @@ namespace TrailerCam
         }
 
         private void OnDisable() => StopFlight();
+
+        private void OnDestroy() => _harmony?.UnpatchSelf();
     }
 }
