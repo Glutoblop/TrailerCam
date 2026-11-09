@@ -19,7 +19,7 @@ Select **Trailer Cam** in the [Valheim Mod Installer](https://github.com/Glutobl
 
 To change the hotkey, open **Esc → Mod Settings → Trailer Cam → Camera → Toggle Key**. Click the current binding, hold any modifiers you want, and press the main key. For example, hold **Alt + Ctrl + Shift** and press **F8**. **Reset** restores **F8**.
 
-The Trailer Cam tab also has settings for starting speed, smoothing, and HUD hiding. Settings are saved in `BepInEx/config/jordan.valheim.trailercam.cfg`.
+Use **Movement Smoothing** to tune acceleration and stopping from **0** (immediate) to **1** (gradual). **Smoothness** controls turning separately. Trailer Cam keeps the view under manual control while filming, including when you click near your character. Settings are saved in `BepInEx/config/jordan.valheim.trailercam.cfg`.
 
 ## Build
 

@@ -12,9 +12,11 @@ namespace TrailerCam
         public const string Guid = "jordan.valheim.trailercam";
         public const string Version = "0.1.1";
 
+        private static Plugin _activeFlight;
         private ConfigEntry<KeyboardShortcut> _toggleKey;
         private ConfigEntry<float> _startSpeed;
-        private ConfigEntry<float> _smoothness;
+        private ConfigEntry<float> _lookSmoothing;
+        private ConfigEntry<float> _movementSmoothing;
         private ConfigEntry<bool> _hideHud;
         private Harmony _harmony;
 
@@ -32,14 +34,23 @@ namespace TrailerCam
             _startSpeed = Config.Bind("Camera", "StartSpeed", 8f,
                 new ConfigDescription("Starting speed in metres per second. Scroll to change it in flight.",
                     new AcceptableValueRange<float>(1f, 1000f)));
-            _smoothness = Config.Bind("Camera", "Smoothness", 0.25f,
-                new ConfigDescription("Smooth the camera's movement and turns. Zero gives an immediate response.",
+            // Keep the existing config key and use its value for movement when upgrading.
+            _lookSmoothing = Config.Bind("Camera", "Smoothness", 0.25f,
+                new ConfigDescription("Smooth camera turns. Zero makes turning immediate.",
+                    new AcceptableValueRange<float>(0f, 1f)));
+            _movementSmoothing = Config.Bind("Camera", "MovementSmoothing", _lookSmoothing.Value,
+                new ConfigDescription("Smooth acceleration and stopping. Zero makes movement immediate.",
                     new AcceptableValueRange<float>(0f, 1f)));
             _hideHud = Config.Bind("Camera", "HideHud", true, "Hide the HUD during flight and restore it on exit.");
 
             _harmony = new Harmony(Guid);
             _harmony.PatchAll(typeof(Plugin).Assembly);
         }
+
+        internal static bool IsFilming(GameCamera camera) => ReferenceEquals(_activeFlight?._flightCamera, camera);
+
+        internal static float GetMovementSmoothing(GameCamera camera) =>
+            IsFilming(camera) ? _activeFlight._movementSmoothing.Value : camera.GetFreeFlySmoothness();
 
         private void Update()
         {
@@ -93,7 +104,7 @@ namespace TrailerCam
             camera.m_freeFlyAcc = Vector3.zero;
             camera.m_freeFlyRef = Quaternion.identity;
             camera.m_freeFlySpeed = _startSpeed.Value;
-            camera.SetFreeFlySmoothness(_smoothness.Value);
+            camera.SetFreeFlySmoothness(_lookSmoothing.Value);
 
             if (_hideHud.Value)
             {
@@ -104,6 +115,7 @@ namespace TrailerCam
 
             // The game's free-fly input lock leaves an existing autorun active.
             player.m_autoRun = false;
+            _activeFlight = this;
             camera.ToggleFreeFly();
         }
 
@@ -117,6 +129,7 @@ namespace TrailerCam
             }
             if (_flightHud) _flightHud.m_userHidden = _previousHudHidden;
 
+            if (_activeFlight == this) _activeFlight = null;
             _flightCamera = null;
             _flightPlayer = null;
             _flightHud = null;
