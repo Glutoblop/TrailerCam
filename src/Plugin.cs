@@ -8,7 +8,7 @@ namespace TrailerCam
     [BepInProcess("valheim.exe")]
     public sealed class Plugin : BaseUnityPlugin
     {
-        public const string Version = "0.0.0";
+        public const string Version = "0.1.0";
 
         private ConfigEntry<KeyCode> _toggleKey;
         private ConfigEntry<float> _startSpeed;

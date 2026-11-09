@@ -3,7 +3,7 @@
   "id": "TrailerCam",
   "name": "Trailer Cam",
   "guid": "jordan.valheim.trailercam",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "author": "Glutoblop",
   "description": "Detach a smooth camera for filming Valheim flybys. Fly with WASD, adjust speed with the scroll wheel, and hide the HUD while filming.",
   "repo": "Glutoblop/TrailerCam",
